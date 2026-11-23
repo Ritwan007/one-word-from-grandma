@@ -1,4 +1,4 @@
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 
 // One Word From Grandma — the single word grandma would text about AI.
 //
@@ -14,3 +14,10 @@ if (!/^\S{1,30}$/.test(WORD)) {
 
 mkdirSync("/output", { recursive: true });
 writeFileSync("/output/entry.txt", WORD, "utf8");
+
+// Verify the write: read it back and confirm it is exactly the chosen
+// word, so a truncated or newline-polluted output can never slip through.
+const written = readFileSync("/output/entry.txt", "utf8");
+if (written !== WORD) {
+  throw new Error(`entry mismatch: wrote ${JSON.stringify(written)}, expected ${JSON.stringify(WORD)}`);
+}
